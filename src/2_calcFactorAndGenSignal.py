@@ -5,9 +5,17 @@ from Config import *
 pd.set_option('expand_frame_repr', False)  # 当列太多时不换行
 
 ### params
-stock_name = 'AAPL'
 long_term = 20
 short_term = 5
+
+def calc_necessary_data(df):
+    """calc necessary data like pct_change 
+    
+    """
+    df['pct_change'] = df['Adj_Close'].pct_change() # daily return
+    df['pct_change'].fillna(value=0, inplace=True)
+    return df
+
 
 def calc_factor(df):
     """
@@ -22,7 +30,12 @@ def calc_factor(df):
     
     return df
 
-def add_more_factor_external(df):   
+def add_more_factor_external(df):  
+    """
+    pls make sure that the external data have 
+    the same length as the original data;
+    using merge and check with the config file
+    """ 
     return df
 
 def calc_signal(df):
@@ -52,6 +65,9 @@ if __name__ == '__main__':
     df.sort_values(by='Date', inplace=True)
     df.drop_duplicates(subset='Date', keep='first', inplace=True)
     df.reset_index(drop=True, inplace=True)
+    
+    # calc necessary data
+    df = calc_necessary_data(df)
     
     # calculate factors 
     df = calc_factor(df)
