@@ -24,7 +24,8 @@
 ## develop Calender
 - 2024-10-24: start the project
 - 2024-10-26: finish the basic structure of the project; can generate trend following strategy's PnL; can see the graph using excel
-
+- 2024-10-28: thanks to Marshal, we get the raw data from bloomberg including bonds, SPY and XAU. We will build a classic 
+40/60 portfolio based on bonds and SPY. And add some metrics.
 
 ## requirements
 see attached requirements.txt
