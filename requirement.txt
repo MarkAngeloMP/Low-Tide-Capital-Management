@@ -6,3 +6,5 @@ scipy
 scikit-learn
 statsmodels
 openpyxl
+quantstats
+ipython
