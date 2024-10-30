@@ -7,12 +7,12 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 # ignore all warnings
 warnings.filterwarnings("ignore")
 
-stock_name = 'AAPL'
-initial_cash = 1000000  
-commission_fee = 1.2 / 1000
+stock_name = 'XAUBNG'
+initial_cash = 100000000
+commission_fee = 0
 slippage = 0.01
 
-date_start = "2010-01-01"
+date_start = "1997-01-01"
 date_end = "2020-12-31"
 
 

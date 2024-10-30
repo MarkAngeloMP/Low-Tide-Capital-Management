@@ -27,7 +27,8 @@ if __name__ == '__main__':
     df['ports_pnl'] = (1+df['ports_pctchange']).cumprod() 
     
     df.set_index('Date', inplace=True)
-    qs.plots.snapshot(df['ports_pnl'], title='60/40Ports Pnl', show=True, savefig='60_40Ports.png')
+    # qs.plots.snapshot(df['ports_pnl'], title='60/40Ports Pnl', show=True, savefig='60_40Ports.png')
+    qs.reports.basic(df['ports_pnl'], output='60_40Ports.html')
 
 
 

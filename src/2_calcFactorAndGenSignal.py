@@ -5,14 +5,14 @@ from Config import *
 pd.set_option('expand_frame_repr', False)  # 当列太多时不换行
 
 ### params
-long_term = 20
-short_term = 5
+long_term = 252
+short_term = 30
 
 def calc_necessary_data(df):
     """calc necessary data like pct_change 
     
     """
-    df['pct_change'] = df['Adj_Close'].pct_change() # daily return
+    df['pct_change'] = df['Close'].pct_change() # daily return
     df['pct_change'].fillna(value=0, inplace=True)
     return df
 
@@ -25,8 +25,8 @@ def calc_factor(df):
     Args:
         df (pd.DataFrame): raw data 
     """
-    df[f'ma{long_term}'] = df['Adj_Close'].rolling(window=long_term, min_periods=1).mean()
-    df[f'ma{short_term}'] = df['Adj_Close'].rolling(window=short_term, min_periods=1).mean()
+    df[f'ma{long_term}'] = df['Close'].rolling(window=long_term, min_periods=1).mean()
+    df[f'ma{short_term}'] = df['Close'].rolling(window=short_term, min_periods=1).mean()
     
     return df
 
@@ -47,12 +47,12 @@ def calc_signal(df):
         df (pd.Dataframe): df with raw data and factors
     """
 
-    condition1 = df['ma5'] > df['ma20']
-    condition2 = df['ma5'].shift(1) <= df['ma20'].shift(1)
+    condition1 = df[f'ma{short_term}'] > df[f'ma{long_term}']
+    condition2 = df[f'ma{short_term}'].shift(1) <= df[f'ma{long_term}'].shift(1)
     df.loc[condition1 & condition2, 'signal'] = 1
     
-    condition1 = df['ma5'] < df['ma20']
-    condition2 = df['ma5'].shift(1) >= df['ma20'].shift(1)
+    condition1 = df[f'ma{short_term}'] < df[f'ma{long_term}']
+    condition2 = df[f'ma{short_term}'].shift(1) >= df[f'ma{long_term}'].shift(1)
     df.loc[condition1 & condition2, 'signal'] = 0
     
     return df
@@ -65,6 +65,7 @@ if __name__ == '__main__':
     df.sort_values(by='Date', inplace=True)
     df.drop_duplicates(subset='Date', keep='first', inplace=True)
     df.reset_index(drop=True, inplace=True)
+    df = df[df['Date'] >= date_start]
     
     # calc necessary data
     df = calc_necessary_data(df)
