@@ -1,0 +1,10 @@
+pandas
+yfinance
+numpy
+matplotlib
+scipy
+scikit-learn
+statsmodels
+openpyxl
+quantstats
+ipython
