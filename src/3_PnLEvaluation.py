@@ -4,7 +4,15 @@ import pandas as pd
 from Config import *
 from metrics import *
 import quantstats as qs 
-pd.set_option('expand_frame_repr', False)
+import sys
+pd.set_option('expand_frame_repr', False)  # 当列太多时不换行
+### params
+if len(sys.argv) == 3:
+    long_term = int(sys.argv[1])
+    short_term = int(sys.argv[2])
+else:
+    long_term = 252
+    short_term = 30
 
 
 def generate_position(df):
@@ -86,8 +94,21 @@ def main():
     
     df.set_index('Date', inplace=True)
     df['close_pnl'] = (1+df['pct_change']).cumprod()
-    qs.reports.basic(df['equity_curve'], benchmark=df['close_pnl'])
     df.to_csv(os.path.join(DATA_DIR, 'pnl_data', stock_name + '.csv'))
+    
+    # append the result to data/summary/{strategy_name}.csv
+    summary_path = os.path.join(DATA_DIR, 'summary', f'{strategy_name}.csv')
+    
+    # set the combination of long term and short term as the index
+    summary_res = {f'({long_term},{short_term})': {'sharp':round(qs.stats.sharpe(df['equity_curve']), 6),
+                                                   'avg_return':100 * round(qs.stats.avg_return(df['equity_curve']), 6)}}
+    # print(summary_res)
+    if os.path.exists(summary_path):
+        summary = pd.read_csv(summary_path, index_col=0)
+        summary = summary._append(pd.DataFrame(summary_res).T)
+    else:
+        summary = pd.DataFrame(summary_res).T
+    summary.to_csv(summary_path)
 
 if __name__ == '__main__':
     main()

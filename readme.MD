@@ -23,6 +23,8 @@
 - 2024-10-28: thanks to Marshal, we get the raw data from bloomberg including bonds, SPY and XAU. We will build a classic 
 40/60 portfolio based on bonds and SPY. And add some metrics. Using quantstats to draw graphs.
 - 2024-10-30：finish basic 60/40 portfolio and its PnL; build metrics to evaluate; use 6040 Portfolio as benchmark; Plot graphs for visiualization
+- 2024-11-03: change Simple Moving Average to Exponential Moving Average; add more metrics to evaluate the strategy; add more graphs for visualization; grid search and 3D heatmap to find the best parameters
+
 
 ## requirements
 see attached requirements.txt
