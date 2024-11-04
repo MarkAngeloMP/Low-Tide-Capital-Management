@@ -36,16 +36,20 @@ short_terms = sorted(df['short_term'].unique())
 Long_Term, Short_Term = np.meshgrid(long_terms, short_terms)
 
 Sharpe_Ratio = df.pivot_table(index='short_term', columns='long_term', values='sharp').values
-fig = go.Figure(data=[go.Surface(z=Sharpe_Ratio, x=long_terms, y=short_terms, colorscale='Viridis')])
+Avg_Return = df.pivot_table(index='short_term', columns='long_term', values='avg_return').values
+fig = go.Figure(data=[go.Surface(z=Sharpe_Ratio, x=long_terms, y=short_terms, surfacecolor=Avg_Return, colorscale='Viridis')])
 
+# 添加标题和轴标签
 fig.update_layout(
-    title='Sharpe Ratio 3D Heatmap',
+    title='Sharpe Ratio 3D Heatmap with Avg Return as Color',
     scene=dict(
         xaxis_title='Long Term',
         yaxis_title='Short Term',
         zaxis_title='Sharpe Ratio'
     ),
-    autosize=True
+    coloraxis_colorbar=dict(
+        title="Avg Return"
+    )
 )
 
 fig.write_html('sharpe_ratio_3d_heatmap.html')
