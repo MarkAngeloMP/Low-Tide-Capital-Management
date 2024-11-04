@@ -31,22 +31,13 @@ df['long_term'] = df['Unnamed: 0'].apply(lambda x: int(x.split(',')[0].strip('()
 df['short_term'] = df['Unnamed: 0'].apply(lambda x: int(x.split(',')[1].strip('()"')))
 df.drop(columns=['Unnamed: 0'], inplace=True)
 
-
-
-# 创建网格数据
 long_terms = sorted(df['long_term'].unique())
 short_terms = sorted(df['short_term'].unique())
-
-# 创建一个二维网格
 Long_Term, Short_Term = np.meshgrid(long_terms, short_terms)
 
-# 使用 pivot_table 将数据透视为网格
 Sharpe_Ratio = df.pivot_table(index='short_term', columns='long_term', values='sharp').values
-
-# 创建 Plotly 图像
 fig = go.Figure(data=[go.Surface(z=Sharpe_Ratio, x=long_terms, y=short_terms, colorscale='Viridis')])
 
-# 添加标题和轴标签
 fig.update_layout(
     title='Sharpe Ratio 3D Heatmap',
     scene=dict(
@@ -57,8 +48,6 @@ fig.update_layout(
     autosize=True
 )
 
-# 保存为交互式HTML文件
 fig.write_html('sharpe_ratio_3d_heatmap.html')
 
-# 展示交互式图像 (可选)
 fig.show()
