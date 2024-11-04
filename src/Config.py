@@ -11,6 +11,7 @@ stock_name = 'XAUBNG'
 initial_cash = 100000000
 commission_fee = 0
 slippage = 0.01
+strategy_name = 'ma_strategy'
 
 date_start = "1997-01-01"
 # date_end = "2020-12-31"
