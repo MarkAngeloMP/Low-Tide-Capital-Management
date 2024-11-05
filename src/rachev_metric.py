@@ -309,6 +309,7 @@ def get_rachev_ratio(returns, upper_q=0.95,  lower_q=0.05, method='gld', quantil
     upper_q (float): The upper quantile of the distribution, used to calculate ETR
     lower_q (float): The lower quantile of the distribution, used to calculate ETL
     method (str): 'gld', 'empirical', skew'; The method used to calculate the Rachev Ratio;
+    quantile_probs (list): Probabilities for quantiles - used to fit GLD.
     incl_plot  (bool): Whether to include a plot of the distribution
     
     Returns:
