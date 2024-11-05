@@ -102,7 +102,9 @@ def main():
     # set the combination of long term and short term as the index
     summary_res = {f'({long_term},{short_term})': {'sharp':round(qs.stats.sharpe(df['equity_curve']), 6),
                                                    'avg_return':100 * round(qs.stats.avg_return(df['equity_curve']), 6),
-                                                    'max_drawdown':100 * round(qs.stats.max_drawdown(df['equity_curve']), 6),}}
+                                                    'max_drawdown':100 * round(qs.stats.max_drawdown(df['equity_curve']), 6),
+                                                    'avg_return':100 * round(qs.stats.avg_return(df['equity_curve']), 6),
+                                                    'win_rate':round(qs.stats.win_rate(df['equity_curve']), 6),}}
     # print(summary_res)
     if os.path.exists(summary_path):
         summary = pd.read_csv(summary_path, index_col=0)
