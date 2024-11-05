@@ -1,4 +1,4 @@
-# single cta backtesting framework for Low tide captial
+# CTA Backtesting Framework for Low Tide Captial
 **author: benchen liu**
 
 **date: 2024-10-24(celebrating the programmer's day Lol)**
