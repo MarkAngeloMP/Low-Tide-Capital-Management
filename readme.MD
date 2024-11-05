@@ -17,7 +17,6 @@
 ## TODOS
 
 - optimize the paramters of portfolio allocation. Maybe dynimiclly change the allocation based on the market condition; try with fixed allocation
-- need more computation resources to do search
 
 ## develop Calender
 
