@@ -18,6 +18,7 @@
 ## TODOS
 - optimize the parameters of the moving average
 
+
 ## develop Calender
 - 2024-10-24: start the project
 - 2024-10-26: finish the basic structure of the project; can generate trend following strategy's PnL; can see the graph using excel
