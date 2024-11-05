@@ -18,10 +18,10 @@ print(f'combinations: {len(combinations)}')
 # 1. run 2_calcFactorAndGenSignal.py
 # 2. run 3_PnLEvaluation.py
 
-for long_term, short_term in tqdm(combinations):
-    # print(f'processing : long_term: {long_term}, short_term: {short_term}')
-    os.system(f'python src/2_calcFactorAndGenSignal.py {long_term} {short_term}')
-    os.system(f'python src/3_PnLEvaluation.py {long_term} {short_term}')
+# for long_term, short_term in tqdm(combinations):
+#     # print(f'processing : long_term: {long_term}, short_term: {short_term}')
+#     os.system(f'python src/2_calcFactorAndGenSignal.py {long_term} {short_term}')
+#     os.system(f'python src/3_PnLEvaluation.py {long_term} {short_term}')
 
 
 
@@ -41,14 +41,14 @@ fig = go.Figure(data=[go.Surface(z=Sharpe_Ratio, x=long_terms, y=short_terms, su
 
 # 添加标题和轴标签
 fig.update_layout(
-    title='Sharpe Ratio 3D Heatmap with Avg Return as Color',
+    title='Sharpe Ratio 3D Heatmap with Max Drawdown as Color',
     scene=dict(
         xaxis_title='Long Term',
         yaxis_title='Short Term',
         zaxis_title='Sharpe Ratio'
     ),
     coloraxis_colorbar=dict(
-        title="Avg max_drawdown"
+        title="max_drawdown"
     )
 )
 

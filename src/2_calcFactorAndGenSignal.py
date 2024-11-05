@@ -9,8 +9,8 @@ if len(sys.argv) == 3: # for optimization
     long_term = int(sys.argv[1])
     short_term = int(sys.argv[2])
 else:
-    long_term = 252
-    short_term = 30
+    long_term = 170
+    short_term = 45
 
 def calc_necessary_data(df):
     """calc necessary data like pct_change 
