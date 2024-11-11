@@ -11,8 +11,10 @@ if len(sys.argv) == 3:
     long_term = int(sys.argv[1])
     short_term = int(sys.argv[2])
 else:
-    long_term = 170
-    short_term = 45
+    long_term = 252
+    short_term = 63
+    # long_term = 170
+    # short_term = 45
 
 
 def generate_position(df):
@@ -103,8 +105,11 @@ def main():
     summary_res = {f'({long_term},{short_term})': {'sharp':round(qs.stats.sharpe(df['equity_curve']), 6),
                                                    'avg_return':100 * round(qs.stats.avg_return(df['equity_curve']), 6),
                                                     'max_drawdown':100 * round(qs.stats.max_drawdown(df['equity_curve']), 6),
-                                                    'avg_return':100 * round(qs.stats.avg_return(df['equity_curve']), 6),
-                                                    'win_rate':round(qs.stats.win_rate(df['equity_curve']), 6),}}
+                                                    'win_rate':round(qs.stats.win_rate(df['equity_curve']), 6),
+                                                    'calmar':round(qs.stats.calmar(df['equity_curve']), 6),
+                                                    'volatility':round(qs.stats.volatility(df['equity_curve']), 6),
+                                                    }}
+    
     # print(summary_res)
     if os.path.exists(summary_path):
         summary = pd.read_csv(summary_path, index_col=0)

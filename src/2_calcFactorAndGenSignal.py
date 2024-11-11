@@ -9,8 +9,10 @@ if len(sys.argv) == 3: # for optimization
     long_term = int(sys.argv[1])
     short_term = int(sys.argv[2])
 else:
-    long_term = 170
-    short_term = 45
+    long_term = 252
+    short_term = 63
+    # long_term = 170
+    # short_term = 45
 
 def calc_necessary_data(df):
     """calc necessary data like pct_change 
@@ -32,6 +34,8 @@ def calc_factor(df, long_term=252, short_term=30, on = 'Close'):
     suffix = on if on != 'Close' else ''
     df[f'sma{long_term}' + suffix] = df[on].ewm(span=long_term,  adjust=False).mean()
     df[f'sma{short_term}'+ suffix] = df[on].ewm(span=short_term, adjust=False).mean()
+    df[f'sma{20}' + suffix] = df[on].ewm(span=20, adjust=False).mean()
+    df[f'sma{60}' + suffix] = df[on].ewm(span=60, adjust=False).mean()
     return df
 
 def add_more_factor_external(df):  
@@ -65,13 +69,11 @@ def calc_signal(df, long_term=252, short_term=30):
     """
 
     condition1 = df[f'sma{short_term}'] > df[f'sma{long_term}']
-    condition2 = df[f'sma{short_term}'].shift(1) <= df[f'sma{long_term}'].shift(1)
-    # condition1 &= df[f'sma{short_term}SPX_XAU'] < df[f'sma{long_term}SPX_XAU']
-    # condition2 &= df[f'sma{short_term}SPX_XAU'].shift(1) >= df[f'sma{long_term}SPX_XAU'].shift(1)
+    condition2 = df[f'sma{20}'] > df[f'sma{60}']
     df.loc[condition1 & condition2, 'signal'] = 1
     
     condition1 = df[f'sma{short_term}'] < df[f'sma{long_term}']
-    condition2 = df[f'sma{short_term}'].shift(1) >= df[f'sma{long_term}'].shift(1)
+    condition2 = df[f'sma{20}'] < df[f'sma{60}']
     # condition1 &= df[f'sma{short_term}SPX_XAU'] > df[f'sma{long_term}SPX_XAU']
     # condition2 &= df[f'sma{short_term}SPX_XAU'].shift(1) <= df[f'sma{long_term}SPX_XAU'].shift(1)
     df.loc[condition1 & condition2, 'signal'] = 0
