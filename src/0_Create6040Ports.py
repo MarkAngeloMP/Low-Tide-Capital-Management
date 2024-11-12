@@ -29,7 +29,7 @@ if __name__ == '__main__':
     df.set_index('Date', inplace=True)
     df.to_csv(os.path.join(DATA_DIR, 'pnl_data', '60_40Ports.csv'))
     # qs.plots.snapshot(df['ports_pnl'], title='60/40Ports Pnl', show=True, savefig='60_40Ports.png')
-    qs.reports.basic(df['ports_pnl'], output='60_40Ports.html')
+    # qs.reports.basic(df['ports_pnl'], output='60_40Ports.html')
 
 
 
