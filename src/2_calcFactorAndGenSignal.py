@@ -10,7 +10,9 @@ if len(sys.argv) == 3: # for optimization
     short_term = int(sys.argv[2])
 else:
     long_term = 252
-    short_term = 30
+    short_term = 63
+    # long_term = 170
+    # short_term = 45
 
 def calc_necessary_data(df):
     """calc necessary data like pct_change 
@@ -21,7 +23,7 @@ def calc_necessary_data(df):
     return df
 
 
-def calc_factor(df, long_term=252, short_term=30):
+def calc_factor(df, long_term=252, short_term=30, on = 'Close'):
     """
     calculate long term and short term 
     SMA and try to add more in the future
@@ -29,17 +31,32 @@ def calc_factor(df, long_term=252, short_term=30):
     Args:
         df (pd.DataFrame): raw data 
     """
-
-    df[f'sma{long_term}'] = df['Close'].ewm(span=long_term, adjust=False).mean()
-    df[f'sma{short_term}'] = df['Close'].ewm(span=short_term, adjust=False).mean()
+    suffix = on if on != 'Close' else ''
+    df[f'sma{long_term}' + suffix] = df[on].ewm(span=long_term,  adjust=False).mean()
+    df[f'sma{short_term}'+ suffix] = df[on].ewm(span=short_term, adjust=False).mean()
+    df[f'sma{20}' + suffix] = df[on].ewm(span=20, adjust=False).mean()
+    df[f'sma{60}' + suffix] = df[on].ewm(span=60, adjust=False).mean()
     return df
 
-def add_more_factor_external(df, long_term=252, short_term=30):  
+def add_more_factor_external(df):  
     """
     pls make sure that the external data have 
     the same length as the original data;
     using merge and check with the config file
     """ 
+    spydata = pd.read_csv(os.path.join(DATA_DIR, 'stock', 'SPTX.csv'), parse_dates=['Date'])
+    spydata.sort_values(by='Date', inplace=True)
+    spydata.drop_duplicates(subset='Date', keep='first', inplace=True)
+    spydata.reset_index(drop=True, inplace=True)
+    spydata = spydata[spydata['Date'] >= date_start]
+    
+    # calc SPY/XAU
+    spydata.rename(columns={'Close': 'SPX_close'}, inplace=True)
+    df = pd.merge(df, spydata[['Date', 'SPX_close']], on='Date', how='left')
+    
+    df['SPX_XAU'] = df['SPX_close'] / df['Close']
+    df = calc_factor(df, long_term=252, short_term=30, on='SPX_XAU')
+    
     return df
 
 def calc_signal(df, long_term=252, short_term=30):
@@ -52,11 +69,13 @@ def calc_signal(df, long_term=252, short_term=30):
     """
 
     condition1 = df[f'sma{short_term}'] > df[f'sma{long_term}']
-    condition2 = df[f'sma{short_term}'].shift(1) <= df[f'sma{long_term}'].shift(1)
+    condition2 = df[f'sma{20}'] > df[f'sma{60}']
     df.loc[condition1 & condition2, 'signal'] = 1
     
     condition1 = df[f'sma{short_term}'] < df[f'sma{long_term}']
-    condition2 = df[f'sma{short_term}'].shift(1) >= df[f'sma{long_term}'].shift(1)
+    condition2 = df[f'sma{20}'] < df[f'sma{60}']
+    # condition1 &= df[f'sma{short_term}SPX_XAU'] > df[f'sma{long_term}SPX_XAU']
+    # condition2 &= df[f'sma{short_term}SPX_XAU'].shift(1) <= df[f'sma{long_term}SPX_XAU'].shift(1)
     df.loc[condition1 & condition2, 'signal'] = 0
     
     return df
@@ -69,7 +88,7 @@ if __name__ == '__main__':
     df.sort_values(by='Date', inplace=True)
     df.drop_duplicates(subset='Date', keep='first', inplace=True)
     df.reset_index(drop=True, inplace=True)
-    df = df[df['Date'] >= date_start]
+    df = df[df['Date'] >= pd.to_datetime(date_start)]
     
     # calc necessary data
     df = calc_necessary_data(df)
@@ -79,7 +98,7 @@ if __name__ == '__main__':
     
     # if you want to include any other factors that
     # from other files you can add it here
-    df = add_more_factor_external(df)
+    # df = add_more_factor_external(df)
     
     # calc_signal
     df = calc_signal(df, long_term=long_term, short_term=short_term)

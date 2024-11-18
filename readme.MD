@@ -1,8 +1,6 @@
 # CTA Backtesting Framework for Low Tide Captial
 **author: benchen liu**
-
 **date: 2024-10-24(celebrating the programmer's day Lol)**
-
 **email: benchenl@uchicago.edu**
 
 ## Roadmap
@@ -20,18 +18,20 @@
 
 
 ## develop Calender
+
 - 2024-10-24: start the project
 - 2024-10-26: finish the basic structure of the project; can generate trend following strategy's PnL; can see the graph using excel
-- 2024-10-28: thanks to Marshal, we get the raw data from bloomberg including bonds, SPY and XAU. We will build a classic 
+- 2024-10-28: thanks to Marshal, we get the raw data from bloomberg including bonds, SPY and XAU. We will build a classic
 40/60 portfolio based on bonds and SPY. And add some metrics. Using quantstats to draw graphs.
 - 2024-10-30：finish basic 60/40 portfolio and its PnL; build metrics to evaluate; use 6040 Portfolio as benchmark; Plot graphs for visiualization
 - 2024-11-03: change Simple Moving Average to Exponential Moving Average; add more metrics to evaluate the strategy; add more graphs for visualization; grid search and 3D heatmap to find the best parameters
 
-
 ## requirements
+
 see attached requirements.txt
 
 ## usage
+
 ```bash
 pip install -r requirements.txt
 
@@ -43,5 +43,6 @@ python 3_PnLEvaluation.py
 ```
 
 ## file structure
+
 - data: store the data used in the project
 - src: store the source code of the project

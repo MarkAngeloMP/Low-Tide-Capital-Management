@@ -18,10 +18,10 @@ print(f'combinations: {len(combinations)}')
 # 1. run 2_calcFactorAndGenSignal.py
 # 2. run 3_PnLEvaluation.py
 
-for long_term, short_term in tqdm(combinations):
-    # print(f'processing : long_term: {long_term}, short_term: {short_term}')
-    os.system(f'python src/2_calcFactorAndGenSignal.py {long_term} {short_term}')
-    os.system(f'python src/3_PnLEvaluation.py {long_term} {short_term}')
+# for long_term, short_term in tqdm(combinations):
+#     # print(f'processing : long_term: {long_term}, short_term: {short_term}')
+#     os.system(f'python src/2_calcFactorAndGenSignal.py {long_term} {short_term}')
+#     os.system(f'python src/3_PnLEvaluation.py {long_term} {short_term}')
 
 
 
@@ -36,16 +36,20 @@ short_terms = sorted(df['short_term'].unique())
 Long_Term, Short_Term = np.meshgrid(long_terms, short_terms)
 
 Sharpe_Ratio = df.pivot_table(index='short_term', columns='long_term', values='sharp').values
-fig = go.Figure(data=[go.Surface(z=Sharpe_Ratio, x=long_terms, y=short_terms, colorscale='Viridis')])
+max_drawdown = df.pivot_table(index='short_term', columns='long_term', values='max_drawdown').values
+fig = go.Figure(data=[go.Surface(z=Sharpe_Ratio, x=long_terms, y=short_terms, surfacecolor=max_drawdown, colorscale='Viridis')])
 
+# 添加标题和轴标签
 fig.update_layout(
-    title='Sharpe Ratio 3D Heatmap',
+    title='Sharpe Ratio 3D Heatmap with Max Drawdown as Color',
     scene=dict(
         xaxis_title='Long Term',
         yaxis_title='Short Term',
         zaxis_title='Sharpe Ratio'
     ),
-    autosize=True
+    coloraxis_colorbar=dict(
+        title="max_drawdown"
+    )
 )
 
 fig.write_html('sharpe_ratio_3d_heatmap.html')

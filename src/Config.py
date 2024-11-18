@@ -13,8 +13,9 @@ commission_fee = 0
 slippage = 0.01
 strategy_name = 'ma_strategy'
 
-date_start = "1997-01-01"
+date_start = "1975-01-01"
 # date_end = "2020-12-31"
+date_end = None
 
 
 SRC_DIR = os.path.dirname(os.path.abspath(__file__))
