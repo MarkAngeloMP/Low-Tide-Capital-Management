@@ -1,22 +1,21 @@
-# single cta backtesting framework for Low tide captial
-
+# CTA Backtesting Framework for Low Tide Captial
 **author: benchen liu**
 **date: 2024-10-24(celebrating the programmer's day Lol)**
 **email: benchenl@uchicago.edu**
 
-## introduction
+## Roadmap
+1) Buildout a 60/40 portfolio - DONE
+2) Compute traditionals ratios - DONE
+3) Develop / Backtest the optimal method to trigger a trend - SOON TO BE DONE
+4) Implement the trend model into the 60/40 portfolio with an additional 10% allocation when triggered. 
+5) Develop a dynamic method to optimize the allocation percentage
+6) Develop a new metric Portfolio C’s “resiliency” relative to Portfolio A.
+7) Develop a metric to decide whether Port D should be used instead of Port B in Port C. 
 
-- Single cta backtesting framework for Low tide captial, mainly using simple moving average to generate signals.
-
-- Optimizing the parameters of the moving average to maximize the return of the strategy.
-
-- Aiming to create a new trading strategy that can be added to classic 60/40 paramter
-
-- Add some metrics to evaluate the performance of the strategy
 
 ## TODOS
+- optimize the parameters of the moving average
 
-- optimize the paramters of portfolio allocation. Maybe dynimiclly change the allocation based on the market condition; try with fixed allocation
 
 ## develop Calender
 
