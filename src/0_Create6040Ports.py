@@ -5,7 +5,7 @@ import quantstats as qs
 qs.extend_pandas()
 
 BONDS_TICKER = 'LUATTRUU'
-STOCK_TICKER = 'SPTX'
+STOCK_TICKER = 'SPX'
 
 if __name__ == '__main__':
     bond_df = pd.read_csv(os.path.join(os.path.join(DATA_DIR, 'stock'), f'{BONDS_TICKER}.csv'), parse_dates=['Date'])
@@ -13,7 +13,6 @@ if __name__ == '__main__':
     
     bond_df.sort_values('Date', inplace=True)
     stock_df.sort_values('Date', inplace=True)
-    
     df = pd.merge(bond_df, stock_df, on='Date', how='inner', suffixes=('_bond', '_stock'))
     df = df[['Date', 'Close_bond', 'Close_stock']]
     df.columns = ['Date', 'Bond', 'Stock']
