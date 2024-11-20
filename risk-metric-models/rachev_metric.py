@@ -383,5 +383,9 @@ if __name__ == '__main__':
     aapl_data = pd.read_csv(FILEPATH, index_col=0, parse_dates=True)
     returns = aapl_data['Adj_Close'].pct_change().dropna().rename('Rets')
     rachev_ratio = get_rachev_ratio(returns, method='empirical', incl_plot=True)
+    print(rachev_ratio)
     rachev_ratio = get_rachev_ratio(returns, method='skew', incl_plot=True)
+    print(rachev_ratio)
     rachev_ratio = get_rachev_ratio(returns, method='gld', incl_plot=True)
+    print(rachev_ratio)
+    
