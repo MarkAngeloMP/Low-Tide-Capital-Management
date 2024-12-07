@@ -17,74 +17,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy import stats, integrate
 from scipy.optimize import minimize
-
-def calc_rolling_corr(benchmark, portfolios, window_size, plot=True, benchmark_name='benchmark'):
-    '''
-    input:
-    benchmark: pd.Series or single col pd.Dataframe; correlation of portfolios will be with respect to this benchmark
-    portflios: pd.Dataframe; each column is % ret timeseries
-    window_size: int; rolling window size
-    plot: bool (default: True); Whether to include a plot
-    '''
-    
-    # Check that benchmark is a series, if single col df, cast to series
-    if isinstance(benchmark, pd.Series):
-        pass
-    elif isinstance(benchmark, pd.DataFrame) and len(benchmark.columns) == 1:
-        benchmark = benchmark.iloc[:, 0]
-    else:
-        raise TypeError('Expected a pd.Series or a single-column pd.Dataframe for the benchmark')
-
-    # Check that portfolios is a dataframe
-    if not isinstance(portfolios, pd.DataFrame):
-        raise TypeError('Expected a pd.DataFrame for the portfolios')
-    
-    # Check that y and x are the same len    
-    if len(benchmark.index) != len(portfolios.index):
-        raise ValueError(f'Benchmark and Porfolio data do not have the same length; ({len(benchmark.index)} and {len(portfolios.index)})')
-    
-    rolling_corr = portfolios.rolling(window=window_size).corr(benchmark).dropna()
-    
-    # For label
-    if window_size < 21:
-        num = window_size
-        units = 'day'
-    elif window_size >= 21 and window_size < 252:
-        num = round(window_size/21, 2)
-        units = 'month'
-    else:
-        num = round(window_size/252, 2)
-        units = 'year'
-        
-    if plot:
-        plt.figure(figsize=(14, 7))
-        
-        # Plot rolling correlations
-        for column in portfolios.columns:
-            plt.plot(rolling_corr[column], label=f'{column}')
-        
-        plt.title(f'Rolling Correlation with {benchmark.name} ({num} - {units} window)')
-        plt.xlabel('Date')
-        plt.ylabel('Correlation')
-        plt.axhline(0, color='black', lw=0.5, ls='--')  # Add a horizontal line at y=0
-        plt.legend(loc='center left')
-
-        # Calculate cumulative returns for the benchmark
-        cumulative_returns = (benchmark + 1).cumprod()
-        # Create a secondary y-axis
-        ax2 = plt.gca().twinx()
-        ax2.plot(rolling_corr.index, cumulative_returns.loc[rolling_corr.index], color='red', label=f'Cumulative Returns of {benchmark_name}', linestyle='--')
-        ax2.set_ylabel(f'Cumulative Returns', color='red')
-        ax2.tick_params(axis='y', labelcolor='red')
-        # Add a legend for the secondary axis
-        ax2.legend(loc='lower right')
-
-        plt.show()
-    
-    return rolling_corr
-    
-
-    
     
 def fit_skew_normal(mean, std, skew):
     """
@@ -456,6 +388,76 @@ def get_rachev_ratio(returns, upper_q=0.95,  lower_q=0.05, method='gld', quantil
 
     return rachev_ratio
     
+def calc_rolling_corr(benchmark, portfolios, window_size, plot=True, highlight_regions=None, benchmark_name='benchmark'):
+    '''
+    input:
+    benchmark: pd.Series or single col pd.Dataframe; correlation of portfolios will be with respect to this benchmark
+    portflios: pd.Dataframe; each column is % ret timeseries
+    window_size: int; rolling window size
+    plot: bool (default: True); Whether to include a plot
+    '''
+    
+    # Check that benchmark is a series, if single col df, cast to series
+    if isinstance(benchmark, pd.Series):
+        pass
+    elif isinstance(benchmark, pd.DataFrame) and len(benchmark.columns) == 1:
+        benchmark = benchmark.iloc[:, 0]
+    else:
+        raise TypeError('Expected a pd.Series or a single-column pd.Dataframe for the benchmark')
+
+    # Check that portfolios is a dataframe
+    if not isinstance(portfolios, pd.DataFrame):
+        raise TypeError('Expected a pd.DataFrame for the portfolios')
+    
+    # Check that y and x are the same len    
+    if len(benchmark.index) != len(portfolios.index):
+        raise ValueError(f'Benchmark and Porfolio data do not have the same length; ({len(benchmark.index)} and {len(portfolios.index)})')
+    
+    rolling_corr = portfolios.rolling(window=window_size).corr(benchmark).dropna()
+    
+    # For label
+    if window_size < 21:
+        num = window_size
+        units = 'day'
+    elif window_size >= 21 and window_size < 252:
+        num = round(window_size/21, 2)
+        units = 'month'
+    else:
+        num = round(window_size/252, 2)
+        units = 'year'
+        
+    if plot:
+        plt.figure(figsize=(14, 7))
+        
+        # Plot rolling correlations
+        for column in portfolios.columns:
+            plt.plot(rolling_corr[column], label=f'{column}')
+        
+        plt.title(f'Rolling Correlation with {benchmark.name} ({num} - {units} window)')
+        plt.xlabel('Date')
+        plt.ylabel('Correlation')
+        plt.axhline(0, color='black', lw=0.5, ls='--')  # Add a horizontal line at y=0
+        plt.legend(loc='center left')
+
+        # Highlight regions
+        if highlight_regions:
+            for start_date, end_date in highlight_regions:
+                plt.axvspan(start_date, end_date, color='yellow', alpha=0.5)
+
+        # Calculate cumulative returns for the benchmark
+        cumulative_returns = (benchmark + 1).cumprod()
+        # Create a secondary y-axis
+        ax2 = plt.gca().twinx()
+        ax2.plot(rolling_corr.index, cumulative_returns.loc[rolling_corr.index], color='red', label=f'Cumulative Returns of {benchmark_name}', linestyle='--')
+        ax2.set_ylabel(f'Cumulative Returns', color='red')
+        ax2.tick_params(axis='y', labelcolor='red')
+        # Add a legend for the secondary axis
+        ax2.legend(loc='lower right')
+
+        plt.show()
+
+    
+    return rolling_corr
 
 if __name__ == '__main__':
     
