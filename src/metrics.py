@@ -388,7 +388,7 @@ def get_rachev_ratio(returns, upper_q=0.95,  lower_q=0.05, method='gld', quantil
 
     return rachev_ratio
     
-def calc_rolling_corr(benchmark, portfolios, window_size, plot=True, highlight_regions=None, benchmark_name='benchmark'):
+def calc_rolling_corr(benchmark, portfolios, window_size, plot=True, highlight_regions=None, benchmark_name='benchmark', plot_path=None, plot_name=None, xlims=None):
     '''
     input:
     benchmark: pd.Series or single col pd.Dataframe; correlation of portfolios will be with respect to this benchmark
@@ -427,35 +427,54 @@ def calc_rolling_corr(benchmark, portfolios, window_size, plot=True, highlight_r
         units = 'year'
         
     if plot:
-        plt.figure(figsize=(14, 7))
+        fig, ax1 = plt.subplots(figsize=(14, 7))  # Explicitly create figure and axis objects
         
         # Plot rolling correlations
         for column in portfolios.columns:
-            plt.plot(rolling_corr[column], label=f'{column}')
+            ax1.plot(rolling_corr[column], label=f'{column}')
         
-        plt.title(f'Rolling Correlation with {benchmark.name} ({num} - {units} window)')
-        plt.xlabel('Date')
-        plt.ylabel('Correlation')
-        plt.axhline(0, color='black', lw=0.5, ls='--')  # Add a horizontal line at y=0
-        plt.legend(loc='center left')
+        ax1.set_title(f'Rolling Correlation with {benchmark.name} ({num} - {units} window)')
+        ax1.set_xlabel('Date')
+        ax1.set_ylabel('Correlation')
+        ax1.axhline(0, color='black', lw=0.5, ls='--')  # Add a horizontal line at y=0
 
         # Highlight regions
         if highlight_regions:
             for start_date, end_date in highlight_regions:
-                plt.axvspan(start_date, end_date, color='yellow', alpha=0.5)
+                ax1.axvspan(start_date, end_date, color='yellow', alpha=0.5)
 
         # Calculate cumulative returns for the benchmark
         cumulative_returns = (benchmark + 1).cumprod()
+        
         # Create a secondary y-axis
-        ax2 = plt.gca().twinx()
-        ax2.plot(rolling_corr.index, cumulative_returns.loc[rolling_corr.index], color='red', label=f'Cumulative Returns of {benchmark_name}', linestyle='--')
+        ax2 = ax1.twinx()
+        ax2.plot(rolling_corr.index, cumulative_returns.loc[rolling_corr.index], color='red', 
+                label=f'Cumulative Returns of {benchmark_name}', linestyle='--')
         ax2.set_ylabel(f'Cumulative Returns', color='red')
         ax2.tick_params(axis='y', labelcolor='red')
-        # Add a legend for the secondary axis
-        ax2.legend(loc='lower right')
+        
+        
+        # Combine legends from both axes
+        lines_1, labels_1 = ax1.get_legend_handles_labels()
+        lines_2, labels_2 = ax2.get_legend_handles_labels()
+        lines = lines_1 + lines_2
+        labels = labels_1 + labels_2
+        
+        # Place the combined legend at the bottom with no gap
+        fig.legend(lines, labels, loc='lower center', bbox_to_anchor=(0.5, -0.02), ncol=3, frameon=False)
 
+        # Adjust bottom margin tightly to the legend
+        fig.subplots_adjust(bottom=0.08)  # Reduce bottom spacing
+        plt.tight_layout(rect=[0, 0, 1, 0.98])  # Tight layout excluding legend space
+        
+        if xlims:
+            ax1.set_xlim(xlims)
+            
+        if plot_path and plot_name:
+            # Save the figure as an image
+            fig.savefig(plot_path + f'{plot_name}.png', dpi=300, bbox_inches='tight')
+        # else:
         plt.show()
-
     
     return rolling_corr
 
