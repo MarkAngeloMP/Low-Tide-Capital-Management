@@ -443,6 +443,16 @@ def calc_rolling_corr(benchmark, portfolios, window_size, plot=True, highlight_r
             for start_date, end_date in highlight_regions:
                 ax1.axvspan(start_date, end_date, color='yellow', alpha=0.5)
 
+        # # Add a note for highlighted areas
+        # ax1.text(
+        #     0.5, -0.15,  # Coordinates in figure-relative terms (x=0.5 centers the text)
+        #     "Highlighted areas represent Event Windows",  # Text to display
+        #     fontsize=10,
+        #     color="black",
+        #     transform=fig.transFigure,  # Use figure-relative positioning
+        #     ha='center',  # Horizontally center-align the text
+        # )
+
         # Calculate cumulative returns for the benchmark
         cumulative_returns = (benchmark + 1).cumprod()
         

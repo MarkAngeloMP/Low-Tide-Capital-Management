@@ -24,9 +24,11 @@ base_path = '../data/pnl_data/60_40Ports.csv'
 alternative_path = '../data/pnl_data/XAUBNG.csv'
 results_path = '../reports/event_study/'
 
-# use full_window
-full_window = False # True if we use the full geopolitcal window as specified, otherwise, will use a below 'during' specified date window from the 'start' date
-rolling_window = 63
+# use full_window for each event (as specified in windows_events_dict)
+full_window = False # True if we use the full geopolitcal window as specified, otherwise, will use the below specified date window (pre, during, post)
+full_sample_rolling_window = 252 # Correlation Rolling window used for full-sample
+sample_rolling_window = 63 # Correlation rolling window for individual event study
+
 # days to look at pre / during / post geopolitical window
 pre = 30
 during = 20
@@ -54,10 +56,11 @@ def get_data(base_path, alternative_path):
     base_pnl =  pd.read_csv(base_path, index_col=0, parse_dates=['Date'])
 
     # combine returns to 1 df
-    pnl = pd.concat([base_pnl['ports_pctchange'].rename('6040 ret').to_frame(), alternative_pnl['equity_change'].rename('Strategy ret').to_frame()], axis=1).dropna()
+    pnl = pd.concat([base_pnl['ports_pctchange'].rename('6040 ret').to_frame(), alternative_pnl['equity_change'].rename('Alternative Strategy ret').to_frame()], axis=1).dropna()
     # create combined portfolio
     base_weight = 1 if leveraged else 1-alternative_weight
-    pnl[f'Combined ({base_weight*100}% / {alternative_weight*100}%)'] = pnl['6040 ret'] * base_weight + pnl['Strategy ret'] * alternative_weight
+    stat = 'levered' if leveraged else 'unlevered'
+    pnl[f'Combined Portfolio ret ({alternative_weight*100}%, {stat})'] = pnl['6040 ret'] * base_weight + pnl['Alternative Strategy ret'] * alternative_weight
 
     # Gets the DD for each period
     pnl['6040 Equity'] = (1 + pnl['6040 ret']).cumprod()
@@ -141,7 +144,7 @@ def get_corr(results_df):
     correlations = pd.DataFrame(index = events)
     correlations['Alternative Strategy correlation w/ Base'] = None
     for event in events:
-        correlations.loc[event, 'Alternative Strategy correlation w/ Base'] = results_df.loc[event].loc['6040 ret', 'Strategy ret corr']
+        correlations.loc[event, 'Alternative Strategy correlation w/ Base'] = results_df.loc[event].loc['6040 ret', 'Alternative Strategy ret corr']
     correlations = correlations.applymap(lambda x: np.nan if pd.isna(x) else f'{x*100:.2f}%')
     correlations.rename_axis('event', axis=0, inplace=True)
     windows.set_index('event', inplace=True)
@@ -152,11 +155,11 @@ def save_rolling_corr(correlations):
     highlights = list(zip(correlations['start'], correlations['end']))
     focused_highlights = list(zip(correlations['start'], correlations['start'] + pd.offsets.Day(during)))
     event_periods = list(zip(correlations['start'] - pd.offsets.Day(pre), correlations['start'] + pd.offsets.Day(during + post)))
-    calc_rolling_corr(pnl.iloc[:,0], pnl.iloc[:,1:], window_size=252, highlight_regions=highlights, plot_path=results_path, plot_name='Full-sample')
+    calc_rolling_corr(pnl.iloc[:,0], pnl.iloc[:,1:], window_size=full_sample_rolling_window, highlight_regions=highlights, plot_path=results_path, plot_name='Full-sample')
     
     for idx, event in enumerate(correlations.index):
         start, end = event_periods[idx][0], event_periods[idx][1]
-        calc_rolling_corr(pnl.iloc[:,0], pnl.iloc[:,1:], window_size=rolling_window, highlight_regions=[focused_highlights[idx]], plot_path=results_path, plot_name=event, xlims = [start, end])
+        calc_rolling_corr(pnl.iloc[:,0], pnl.iloc[:,1:], window_size=sample_rolling_window, highlight_regions=[focused_highlights[idx]], plot_path=results_path, plot_name=event, xlims = [start, end])
     
 
 if __name__ == '__main__':
@@ -182,5 +185,7 @@ if __name__ == '__main__':
         compiled_df_dd.to_excel(writer, sheet_name='Data Driven')
         compiled_df_geopolitical.to_excel(writer, sheet_name='Geopolitical')
         full_correlations.to_excel(writer, sheet_name='Full-Window Corrs')
+    # display(compiled_df_dd)
+    # display(compiled_df_geopolitical)
     save_rolling_corr(full_correlations)
     
